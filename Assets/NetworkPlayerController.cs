@@ -9,11 +9,14 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private CharacterController characterController;
     private float verticalVelocity;
+    private Vector2 lastSentInput;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
     }
+
+   
     private void Update()
     {
         if (!IsOwner)
@@ -23,15 +26,14 @@ public class NetworkPlayerController : NetworkBehaviour
         float horizontalMovement = Input.GetAxis("Horizontal");
         float verticalMovement = Input.GetAxis("Vertical");
 
-        Vector2 inputDirection = new Vector2(horizontalMovement, verticalMovement);
+        Vector2 currentInput = new Vector2(horizontalMovement, verticalMovement);
 
-        if (IsServer)
+        if (Vector2.Distance(currentInput, lastSentInput) > 0.01f)
         {
-            MovePlayer(inputDirection);
-        }
-        else
-        {
-            MovePlayerRpc(inputDirection);
+            if (IsServer) MovePlayer(currentInput);
+            else MovePlayerRpc(currentInput);
+
+            lastSentInput = currentInput;
         }
     }
 
