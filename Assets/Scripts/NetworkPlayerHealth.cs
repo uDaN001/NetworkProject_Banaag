@@ -29,19 +29,46 @@ public class NetworkPlayerHealth : NetworkBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        if (!IsServer) {return;}    
+        if (!IsServer)
+        {
+            return;
+        }
+
         CurrentHealth.Value -= damageAmount;
-        CurrentHealth.Value = Mathf.Clamp(CurrentHealth.Value,0,maxHealth);
+
+        CurrentHealth.Value =
+            Mathf.Clamp(CurrentHealth.Value, 0, maxHealth);
+
+        // SHOW DAMAGE POPUP
+        ShowDamageClientRpc(damageAmount);
+
         if (CurrentHealth.Value <= 0)
         {
             Respawn();
         }
     }
+    [ClientRpc]
+    private void ShowDamageClientRpc(int damageAmount)
+    {
+        Vector3 randomOffset =
+     new Vector3(
+         Random.Range(-0.5f, 0.5f),
+         Random.Range(1.5f, 2.5f),
+         Random.Range(-0.5f, 0.5f)
+     );
 
+        Vector3 popupPosition =
+            transform.position + randomOffset;
+
+        DamagePopupSpawner.Instance.SpawnDamagePopup(
+            popupPosition,
+            damageAmount
+        );
+    }
     public void Respawn()
     {
         CurrentHealth.Value = maxHealth;
-        GameObject[] spawnPointObjects = GameObject.FindGameObjectsWithTag("Spawnpoint");
+        GameObject[] spawnPointObjects = GameObject.FindGameObjectsWithTag("SpawnPoint");
         int randomIndex = Random.Range(0, spawnPointObjects.Length);
         Transform selectedSPawn = spawnPointObjects[randomIndex].transform;
 

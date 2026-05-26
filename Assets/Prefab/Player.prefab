@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5077442930825309946}
   - component: {fileID: 6900464202378957926}
   - component: {fileID: 3712683733206346843}
-  - component: {fileID: 889967290347721344}
   - component: {fileID: 662212290500395928}
   - component: {fileID: 1716751274454401240}
   - component: {fileID: 6511001554148681005}
@@ -124,33 +123,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &889967290347721344
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3859166335470010346}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!143 &662212290500395928
 CharacterController:
   m_ObjectHideFlags: 0
@@ -263,6 +235,7 @@ MonoBehaviour:
   moveSpeed: 5
   groundedGravity: -2
   gravity: -9.8
+  jumpStrength: 2
 --- !u!114 &6707081334842924954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348,4 +321,4 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 1024
-  playerAttackKey: 32
+  playerAttackKey: 101

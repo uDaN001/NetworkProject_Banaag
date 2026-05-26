@@ -2525,6 +2525,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1678921264}
   m_CullTransparentMesh: 1
+--- !u!1 &1817529861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1817529863}
+  - component: {fileID: 1817529862}
+  m_Layer: 0
+  m_Name: DamagePopupSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1817529862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1817529861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b0ed0ae9bcd5514f9ef0fab3db5e6f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  floatingDamagePrefab: {fileID: 7900202078741951648, guid: bfb37eeb66fa913419a8787832327791, type: 3}
+--- !u!4 &1817529863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1817529861}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.83488, y: 1.26609, z: -4.4563}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1976509657
 GameObject:
   m_ObjectHideFlags: 0
@@ -2774,3 +2819,4 @@ SceneRoots:
   - {fileID: 1213195278}
   - {fileID: 212423118}
   - {fileID: 1608080719}
+  - {fileID: 1817529863}
