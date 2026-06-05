@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - SpawnPoint
+  - Projectile
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -19,13 +21,13 @@ TagManager:
   - Player
   - 
   - 
+  - Obstacle
   - 
   - 
+  - Projectile
   - 
   - 
-  - 
-  - 
-  - 
+  - Ground
   - 
   - 
   - 

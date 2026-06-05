@@ -6,12 +6,7 @@ public class NetworkPlayerAttack : NetworkBehaviour
     [SerializeField] int damageAmount = 25;
     [SerializeField] LayerMask playerLayer;
     [SerializeField] KeyCode playerAttackKey = KeyCode.Space;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
+   
     // Update is called once per frame
     void Update()
     {
