@@ -22,7 +22,7 @@ public class PlayerRotation : NetworkBehaviour
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 100f, groundLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayer))
         {
             Vector3 target = hit.point;
             target.y = transform.position.y;
