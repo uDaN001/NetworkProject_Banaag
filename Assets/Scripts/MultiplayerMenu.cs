@@ -15,6 +15,7 @@ public class MultiplayerMenu : NetworkBehaviour
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeText;
     [SerializeField] private TMP_Text statusText;
+    public TMP_InputField nameInput;
 
     [Header("Relay Settings")]
     [SerializeField] private int maxConnections = 4;
@@ -156,6 +157,16 @@ public class MultiplayerMenu : NetworkBehaviour
         {
             menuUI.SetActive(false);
         }
+    }
+
+    public void ConfirmName()
+    {
+        // Save the name to our persistent manager
+        if (!string.IsNullOrEmpty(nameInput.text))
+        {
+            NameManager.Instance.SetName(nameInput.text);
+        }
+
     }
 
     private void SetStatus(string message)

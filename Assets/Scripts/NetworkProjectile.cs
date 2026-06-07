@@ -33,22 +33,19 @@ public class NetworkProjectile : NetworkBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
         if (!IsServer)
             return;
 
-        if (other.CompareTag("Player"))
+        NetworkPlayerHealth health =
+            collision.collider.GetComponentInParent<NetworkPlayerHealth>();
+
+        if (health != null)
         {
-            NetworkPlayerHealth targetHealth =
-                other.GetComponent<NetworkPlayerHealth>();
-
-            if (targetHealth != null)
-            {
-                targetHealth.TakeDamage(damageAmount);
-            }
-
+            health.TakeDamage(damageAmount);
             NetworkObject.Despawn();
         }
     }
+
 }

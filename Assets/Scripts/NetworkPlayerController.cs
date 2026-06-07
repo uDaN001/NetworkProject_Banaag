@@ -14,8 +14,13 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField] private float jumpStrength = 5f;
 
     private CharacterController characterController;
-
     private float verticalVelocity;
+
+    // Server stores the latest input
+    private Vector2 currentInput;
+
+    // Client tracks what was last sent
+    private Vector2 lastSentInput;
 
     public event System.Action Jumped;
 
@@ -26,113 +31,85 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private void Update()
     {
-        // ONLY allow the owning player to send input
         if (!IsOwner)
-        {
             return;
+
+        Vector2 newInput = new Vector2(
+            Input.GetAxisRaw("Horizontal"),
+            Input.GetAxisRaw("Vertical")
+        );
+
+        // Only send when changed
+        if (newInput != lastSentInput)
+        {
+            lastSentInput = newInput;
+            SubmitInputRpc(newInput);
         }
 
-        // GET INPUT
-        float horizontalMovement = Input.GetAxis("Horizontal");
-        float verticalMovement = Input.GetAxis("Vertical");
-
-        Vector2 movementInput =
-            new Vector2(horizontalMovement, verticalMovement);
-
-        // JUMP FIRST
         if (Input.GetButtonDown("Jump"))
         {
-            if (IsServer)
-            {
-                PerformJump();
-            }
-            else
-            {
-                JumpRequestRpc();
-            }
-        }
-
-        // MOVE EVERY FRAME
-        if (IsServer)
-        {
-            MovePlayer(movementInput);
-        }
-        else
-        {
-            MovePlayerRpc(movementInput);
+            RequestJumpRpc();
         }
     }
 
-    // =====================================================
-    // CLIENT SENDS MOVEMENT TO SERVER
-    // =====================================================
+    private void FixedUpdate()
+    {
+        if (!IsServer)
+            return;
+
+        MovePlayer();
+    }
 
     [Rpc(SendTo.Server)]
-    private void MovePlayerRpc(Vector2 movementInput)
+    private void SubmitInputRpc(Vector2 movementInput)
     {
-        MovePlayer(movementInput);
+        currentInput = movementInput;
     }
 
-    // =====================================================
-    // MOVEMENT LOGIC
-    // =====================================================
-
-    private void MovePlayer(Vector2 movementInput)
+    private void MovePlayer()
     {
-        // GROUND CHECK
-        if (characterController.isGrounded && verticalVelocity <= 0f)
+        if (characterController.isGrounded &&
+            verticalVelocity <= 0f)
         {
             verticalVelocity = groundedGravity;
         }
         else
         {
-            verticalVelocity += gravity * Time.deltaTime;
+            verticalVelocity += gravity * Time.fixedDeltaTime;
         }
 
-        // HORIZONTAL MOVEMENT
         Vector3 moveDirection =
-            new Vector3(movementInput.x, 0f, movementInput.y).normalized;
+            new Vector3(
+                currentInput.x,
+                0f,
+                currentInput.y
+            ).normalized;
 
         Vector3 horizontalMovement =
             moveDirection * moveSpeed;
 
-        // VERTICAL MOVEMENT
         Vector3 verticalMovement =
             Vector3.up * verticalVelocity;
 
-        // FINAL MOVEMENT
         Vector3 finalMovement =
             horizontalMovement + verticalMovement;
 
-        // APPLY MOVEMENT
-        characterController.Move(finalMovement * Time.deltaTime);
+        characterController.Move(
+            finalMovement * Time.fixedDeltaTime
+        );
     }
-
-    // =====================================================
-    // CLIENT REQUESTS JUMP
-    // =====================================================
 
     [Rpc(SendTo.Server)]
-    private void JumpRequestRpc()
+    private void RequestJumpRpc()
     {
-        PerformJump();
-    }
-
-    // =====================================================
-    // JUMP LOGIC
-    // =====================================================
-
-    private void PerformJump()
-    {
-        // PREVENT DOUBLE JUMP
         if (!characterController.isGrounded)
-        {
             return;
-        }
 
-        // CALCULATE JUMP FORCE
         verticalVelocity =
-            Mathf.Sqrt(jumpStrength * -2f * gravity);
+            Mathf.Sqrt(
+                jumpStrength *
+                -2f *
+                gravity);
 
         Jumped?.Invoke();
     }

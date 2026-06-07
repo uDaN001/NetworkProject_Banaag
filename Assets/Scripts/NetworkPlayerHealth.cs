@@ -9,6 +9,7 @@ public class NetworkPlayerHealth : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,//The host/Client/Server can read this variable
         NetworkVariableWritePermission.Server//The server can only change this value
         );
+    public NetworkVariable<bool> isDead = new NetworkVariable<bool>(false);
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -44,7 +45,8 @@ public class NetworkPlayerHealth : NetworkBehaviour
 
         if (CurrentHealth.Value <= 0)
         {
-            Respawn();
+            isDead.Value = true;
+            //Respawn();
         }
     }
     [ClientRpc]
