@@ -25,6 +25,14 @@ public class PlayerRotation : NetworkBehaviour
             return;
         }
 
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+
+            if (mainCamera == null)
+                return;
+        }
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayer))

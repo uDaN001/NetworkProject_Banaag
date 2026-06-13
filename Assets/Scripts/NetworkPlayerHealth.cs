@@ -3,6 +3,7 @@ using Unity.Netcode;
 public class NetworkPlayerHealth : NetworkBehaviour
 {
     [SerializeField] private int maxHealth = 100;
+    [SerializeField] private GameObject healthUI;
     //Network-synced health variable
     public NetworkVariable<int> CurrentHealth = new NetworkVariable<int>(
         100,
@@ -17,6 +18,7 @@ public class NetworkPlayerHealth : NetworkBehaviour
             CurrentHealth.Value = maxHealth;
         }
         CurrentHealth.OnValueChanged += OnHealthChanged;
+        
     }
     public override void OnNetworkDespawn()
     {
@@ -45,10 +47,11 @@ public class NetworkPlayerHealth : NetworkBehaviour
 
         if (CurrentHealth.Value <= 0)
         {
-            isDead.Value = true;
-            //Respawn();
+            Die();
         }
     }
+
+ 
     [ClientRpc]
     private void ShowDamageClientRpc(int damageAmount)
     {
@@ -67,30 +70,141 @@ public class NetworkPlayerHealth : NetworkBehaviour
             damageAmount
         );
     }
+
+    private void Die()
+    {
+        isDead.Value = true;
+
+        DisablePlayerClientRpc();
+
+        EnterSpectatorClientRpc();
+    }
+    [ClientRpc]
+    private void DisablePlayerClientRpc()
+    {
+        CharacterController cc =
+            GetComponent<CharacterController>();
+
+        if (cc != null)
+            cc.enabled = false;
+
+        NetworkPlayerController movement =
+            GetComponent<NetworkPlayerController>();
+
+        if (movement != null)
+            movement.enabled = false;
+
+        NetworkPlayerAttack attack =
+            GetComponent<NetworkPlayerAttack>();
+
+        if (attack != null)
+            attack.enabled = false;
+
+        MeshRenderer[] renderers =
+            GetComponentsInChildren<MeshRenderer>();
+
+        if (healthUI != null)
+            healthUI.SetActive(false);
+
+        foreach (var r in renderers)
+            r.enabled = false;
+
+    }
+
+    [ClientRpc]
+    private void EnterSpectatorClientRpc()
+    {
+        if (!IsOwner)
+            return;
+
+        PlayerCameraDriver cam =
+            GetComponent<PlayerCameraDriver>();
+
+        if (cam != null)
+            cam.SetSpectatorMode();
+
+        NetworkPlayerHealth healthUI =
+            GetComponent<NetworkPlayerHealth>();
+
+        if (healthUI != null)
+            healthUI.enabled = false;
+    }
+
     public void Respawn()
     {
+        if (!IsServer)
+            return;
+
         CurrentHealth.Value = maxHealth;
-        GameObject[] spawnPointObjects = GameObject.FindGameObjectsWithTag("SpawnPoint");
-        int randomIndex = Random.Range(0, spawnPointObjects.Length);
-        Transform selectedSPawn = spawnPointObjects[randomIndex].transform;
+        isDead.Value = false;
 
-        CharacterController characterController = GetComponent<CharacterController>();
+        GameObject[] spawnPoints =
+            GameObject.FindGameObjectsWithTag("SpawnPoint");
 
-        if (characterController != null)
+        int randomIndex =
+            Random.Range(0, spawnPoints.Length);
+
+        Transform spawn =
+            spawnPoints[randomIndex].transform;
+
+        CharacterController cc =
+            GetComponent<CharacterController>();
+
+        if (cc != null)
+            cc.enabled = false;
+
+        transform.position =
+            spawn.position;
+
+        transform.rotation =
+            spawn.rotation;
+
+        if (cc != null)
+            cc.enabled = true;
+
+        if (healthUI != null)
+            healthUI.SetActive(true);
+
+        EnablePlayerClientRpc();
+    }
+
+    [ClientRpc]
+    private void EnablePlayerClientRpc()
+    {
+        CharacterController cc =
+            GetComponent<CharacterController>();
+
+        if (cc != null)
+            cc.enabled = true;
+
+        NetworkPlayerController movement =
+            GetComponent<NetworkPlayerController>();
+
+        if (movement != null)
+            movement.enabled = true;
+
+        NetworkPlayerAttack attack =
+            GetComponent<NetworkPlayerAttack>();
+
+        if (attack != null)
+            attack.enabled = true;
+
+        NetworkPlayerHealth healthUI =
+           GetComponent<NetworkPlayerHealth>();
+
+        if (healthUI != null)
+            healthUI.enabled = true;
+
+        foreach (MeshRenderer r in GetComponentsInChildren<MeshRenderer>())
+            r.enabled = true;
+
+        if (IsOwner)
         {
+            PlayerCameraDriver cam =
+                GetComponent<PlayerCameraDriver>();
 
-            characterController.enabled = false;
-
-        }
-
-        transform.position = selectedSPawn.position;
-        transform.rotation = selectedSPawn.rotation;
-
-        if (characterController != null)
-        {
-
-            characterController.enabled = true;
-
+            if (cam != null)
+                cam.ExitSpectatorMode();
         }
     }
 }

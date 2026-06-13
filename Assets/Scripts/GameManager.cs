@@ -95,11 +95,43 @@ public class GameManager : NetworkBehaviour
 
     private void RestartGame()
     {
-        if (IsServer)
+        RestartGameServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RestartGameServerRpc()
+    {
+        ResetRound();
+    }
+
+    private void ResetRound()
+    {
+        isGameOver = false;
+
+        ResetRoundClientRpc();
+
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
-            // LoadSceneMode.Single completely destroys the old map and session, providing a clean slate
-            NetworkManager.Singleton.SceneManager.LoadScene(gameObject.scene.name, UnityEngine.SceneManagement.LoadSceneMode.Single);
+            if (client.PlayerObject == null)
+                continue;
+
+            NetworkPlayerHealth health =
+                client.PlayerObject.GetComponent<NetworkPlayerHealth>();
+
+            if (health != null)
+            {
+                health.Respawn();
+            }
         }
+    }
+
+    [ClientRpc]
+    private void ResetRoundClientRpc()
+    {
+        gameOverScreen.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void QuitGame()

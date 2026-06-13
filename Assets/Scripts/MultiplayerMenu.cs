@@ -7,14 +7,17 @@ using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MultiplayerMenu : NetworkBehaviour
 {
     [Header("UI References")]
+    [SerializeField] private GameObject mainMenuUI;
     [SerializeField] private GameObject menuUI;
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeText;
     [SerializeField] private TMP_Text statusText;
+    [SerializeField] private Button playButton;
     public TMP_InputField nameInput;
 
     [Header("Relay Settings")]
@@ -25,6 +28,12 @@ public class MultiplayerMenu : NetworkBehaviour
     private async void Start()
     {
         await InitializeUnityServices();
+
+        playButton.onClick.AddListener(() =>
+        {
+            ShowMenu();
+            HideMainScreen();
+        });
     }
 
     private async System.Threading.Tasks.Task InitializeUnityServices()
@@ -156,6 +165,30 @@ public class MultiplayerMenu : NetworkBehaviour
         if (menuUI != null)
         {
             menuUI.SetActive(false);
+        }
+    }
+
+    private void ShowMenu()
+    {
+        if (menuUI != null)
+        {
+            menuUI.SetActive(true);
+        }
+    }
+
+    private void ShowMainScreen()
+    {
+        if (mainMenuUI != null)
+        {
+            mainMenuUI.SetActive(true);
+        }
+    }
+
+    private void HideMainScreen()
+    {
+        if (mainMenuUI != null)
+        {
+            mainMenuUI.SetActive(false);
         }
     }
 
